@@ -30,4 +30,97 @@
 
 参考代码例子：
 
+传输的实体类为：
+package com.example.lgm;
+
+/**
+ * Created by lgm on 16/7/8.
+ */
+public class Person {
+
+    private String sayhello;
+
+    private String test;
+
+    private String haha;
+
+    public Person() {
+    }
+
+    public Person(String sayhello, String test, String haha) {
+        this.sayhello = sayhello;
+        this.test = test;
+        this.haha = haha;
+    }
+
+    public String getSayhello() {
+        return sayhello;
+    }
+
+    public void setSayhello(String sayhello) {
+        this.sayhello = sayhello;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getHaha() {
+        return haha;
+    }
+
+    public void setHaha(String haha) {
+        this.haha = haha;
+    }
+}
+
+访问的服务接口为：
+package com.example.lgm;
+
+import com.example.lgm.annotations.*;
+
+import java.util.List;
+
+/**
+ * Created by lgm on 16/7/8.
+ */
+@HttpDriver(baseurl = "http://127.0.0.1:8080")
+public interface Service {
+
+    @Post(path = "/{path}")
+    public Person call(@PathVariable(value = "path") String path, @Param(value = "pp") String pp);
+
+    @Get(path = "/{path}")
+    public List<Person> callList(@PathVariable(value = "path") String path);
+
+}
+
+Client调用类为：
+package com.example.lgm;
+
+import com.example.lgm.factory.HttpDriverFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by lgm on 16/7/8.
+ */
+public class Client {
+
+    public static void main(String[] args){
+
+        Service service = (Service) new HttpDriverFactory().get(Service.class, Person[].class);
+        System.out.println(service.call("haha", "ppp").getHaha()+" ");
+        List<Person> persons = service.callList("list");
+        for(Person person : persons){
+            System.out.println(person.getHaha());
+        }
+    }
+
+}
 
