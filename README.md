@@ -17,8 +17,8 @@
 
 @HttpDriver
 
-其中get,post,put,delete对应RESTful风格的接口的四种不同的接口访问方式，其都是针对方法级别的注解。其中都有String path()属性，代表的是
-访问接口路径中的url中path部分。
+其中get,post,put,delete对应RESTful风格的接口的四种不同的接口访问方式，其都是针对方法级别的注解。其中都有String path()属性和Class returnClass属性，其中path代表的是访问接口路径中的url中path部分，returnClass代表的是返回类型，需要注意的是诸如List<Person>这样的返回
+值类型，也应该设置为Person.class
 
 @Param是针对参数级别的注解，其中有String value()字段，其表示的是所需要传入参数的key。
 
@@ -91,20 +91,21 @@ import java.util.List;
 @HttpDriver(baseurl = "http://127.0.0.1:8080")
 public interface Service {
 
-    @Post(path = "/{path}")
+    @Post(path = "/{path}", returnClass = Person.class)
     public Person call(@PathVariable(value = "path") String path, @Param(value = "pp") String pp);
 
-    @Get(path = "/{path}")
+    @Get(path = "/{path}", returnClass = Person.class)
     public List<Person> callList(@PathVariable(value = "path") String path);
 
 }
 
+
 Client调用类为：
+
 package com.example.lgm;
 
 import com.example.lgm.factory.HttpDriverFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -112,15 +113,18 @@ import java.util.List;
  */
 public class Client {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IllegalAccessException, InstantiationException, NoSuchMethodException {
 
-        Service service = (Service) new HttpDriverFactory().get(Service.class, Person[].class);
+        Service service = (Service) new HttpDriverFactory().get(Service.class);
         System.out.println(service.call("haha", "ppp").getHaha()+" ");
         List<Person> persons = service.callList("list");
         for(Person person : persons){
             System.out.println(person.getHaha());
         }
+
+
     }
 
 }
+
 
